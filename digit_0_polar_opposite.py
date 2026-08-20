@@ -514,14 +514,14 @@ class ZeroXTradeEngine:
         if self.is_stopped:
             return f"🛑 STOPPED (Max trades: {self.max_real_trades} reached)"
         
-        status = f"{'🔒 LOCKED' if self.is_locked else '🔓 UNLOCKED'}"
+        status = f"{'\ud83d\udd12 LOCKED' if self.is_locked else '\ud83d\udd13 UNLOCKED'}"
         
         state_map = {
-            "IDLE": f"🟢 IDLE (Waiting for 0) {status}",
-            "ZERO_DETECTED": f"🟡 0 DETECTED (Wait for next digit) {status}",
-            "STREAK_PAUSED": f"🔴 PAUSED (0 streak detected) {status}",
-            "X_SET": f"🔵 X SET: {self.x_digit} (Waiting for {self.x_digit}) {status}",
-            "TRADE_PLACED": "🟣 TRADE PLACED! (Waiting for result...)"
+            "IDLE": f"\ud83d\udfe2 IDLE (Waiting for 0) {status}",
+            "ZERO_DETECTED": f"\ud83d\udfe1 0 DETECTED (Wait for next digit) {status}",
+            "STREAK_PAUSED": f"\ud83d\udd34 PAUSED (0 streak detected) {status}",
+            "X_SET": f"\ud83d\udd35 X SET: {self.x_digit} (Waiting for {self.x_digit}) {status}",
+            "TRADE_PLACED": "\ud83d\udfe3 TRADE PLACED! (Waiting for result...)"
         }
         return state_map.get(self.state, self.state)
 
@@ -842,7 +842,7 @@ class ZeroXTradeBot:
         uptime = str(datetime.now() - stats['start_time']).split('.')[0]
 
         # Status display
-        lock_status = "🔒 LOCKED (Paper Only)" if stats['is_locked'] else "🔓 UNLOCKED (Real Trading)"
+        lock_status = "\ud83d\udd12 LOCKED (Paper Only)" if stats['is_locked'] else "\ud83d\udd13 UNLOCKED (Real Trading)"
         lock_color = RED if stats['is_locked'] else GREEN
         
         # Win/Loss displays
@@ -884,11 +884,11 @@ class ZeroXTradeBot:
             price_str = self.display.format_price(stats['current_price'], self.decimals)
             time_since = stats['time_since_last_tick']
             if time_since < 3:
-                indicator = "🟢 LIVE"
+                indicator = "\ud83d\udfe2 LIVE"
             elif time_since < 10:
-                indicator = "🟡 STALE"
+                indicator = "\ud83d\udfe1 STALE"
             else:
-                indicator = "🔴 NO DATA"
+                indicator = "\ud83d\udd34 NO DATA"
             print(f"\n  Current Price: {price_str}    Status: {indicator}")
             print(f"  Last Tick: {stats['last_tick_time']}    ({time_since:.1f}s ago)")
 
