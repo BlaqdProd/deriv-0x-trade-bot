@@ -514,14 +514,14 @@ class ZeroXTradeEngine:
         if self.is_stopped:
             return f"🛑 STOPPED (Max trades: {self.max_real_trades} reached)"
         
-        status = f"{'\ud83d\udd12 LOCKED' if self.is_locked else '\ud83d\udd13 UNLOCKED'}"
+        status = f"{'🔒 LOCKED' if self.is_locked else '🔓 UNLOCKED'}"
         
         state_map = {
-            "IDLE": f"\ud83d\udfe2 IDLE (Waiting for 0) {status}",
-            "ZERO_DETECTED": f"\ud83d\udfe1 0 DETECTED (Wait for next digit) {status}",
-            "STREAK_PAUSED": f"\ud83d\udd34 PAUSED (0 streak detected) {status}",
-            "X_SET": f"\ud83d\udd35 X SET: {self.x_digit} (Waiting for {self.x_digit}) {status}",
-            "TRADE_PLACED": "\ud83d\udfe3 TRADE PLACED! (Waiting for result...)"
+            "IDLE": f"🟢 IDLE (Waiting for 0) {status}",
+            "ZERO_DETECTED": f"🟡 0 DETECTED (Wait for next digit) {status}",
+            "STREAK_PAUSED": f"🔴 PAUSED (0 streak detected) {status}",
+            "X_SET": f"🔵 X SET: {self.x_digit} (Waiting for {self.x_digit}) {status}",
+            "TRADE_PLACED": "🟣 TRADE PLACED! (Waiting for result...)"
         }
         return state_map.get(self.state, self.state)
 
@@ -691,27 +691,28 @@ class ZeroXTradeBot:
         print("  📌 Win/Loss determined by next tick (0 = loss, !=0 = win)")
         print("=" * 60)
 
+        # Check if config exists - if so, load it automatically
         saved_config = load_config()
         if saved_config:
-            print(f"\n  📂 Found saved configuration from {saved_config.get('last_updated', 'unknown')}")
+            print("\n  📂 Found saved configuration, loading automatically...")
             print(f"     Asset: {saved_config.get('asset', 'N/A')}")
             print(f"     Decimals: {saved_config.get('decimals', 'N/A')}")
             print(f"     Account Type: {saved_config.get('account_type', 'N/A')}")
             print(f"     Stake: ${saved_config.get('stake', 'N/A')}")
             print(f"     Max Real Trades: {saved_config.get('max_trades', 'N/A')}")
-            use_saved = input("\n  Use saved config? (y/n) [y]: ").strip().lower()
-            if use_saved != 'n':
-                self.asset = saved_config.get('asset', 'R_100')
-                self.decimals = saved_config.get('decimals', 2)
-                self.app_id = saved_config.get('app_id', '')
-                self.api_token = saved_config.get('api_token', '')
-                self.account_type = saved_config.get('account_type', 'real')
-                self.stake = saved_config.get('stake', 1.0)
-                self.max_trades = saved_config.get('max_trades', 0)
-                self.config_loaded = True
-                print(f"\n  ✅ Loaded saved configuration")
-                return
+            
+            self.asset = saved_config.get('asset', 'R_100')
+            self.decimals = saved_config.get('decimals', 2)
+            self.app_id = saved_config.get('app_id', '')
+            self.api_token = saved_config.get('api_token', '')
+            self.account_type = saved_config.get('account_type', 'real')
+            self.stake = saved_config.get('stake', 1.0)
+            self.max_trades = saved_config.get('max_trades', 0)
+            self.config_loaded = True
+            print("\n  ✅ Loaded saved configuration automatically")
+            return
 
+        # No config found - ask for user input
         print("\n  📌 Common Deriv Symbols:")
         print("     🔹 Synthetic Indices: R_10, R_25, R_50, R_75, R_100")
         print("     🔹 Volatility Indices: 1HZ10V, 1HZ25V, 1HZ50V, 1HZ100V")
@@ -841,7 +842,7 @@ class ZeroXTradeBot:
         uptime = str(datetime.now() - stats['start_time']).split('.')[0]
 
         # Status display
-        lock_status = "\ud83d\udd12 LOCKED (Paper Only)" if stats['is_locked'] else "\ud83d\udd13 UNLOCKED (Real Trading)"
+        lock_status = "🔒 LOCKED (Paper Only)" if stats['is_locked'] else "🔓 UNLOCKED (Real Trading)"
         lock_color = RED if stats['is_locked'] else GREEN
         
         # Win/Loss displays
@@ -883,11 +884,11 @@ class ZeroXTradeBot:
             price_str = self.display.format_price(stats['current_price'], self.decimals)
             time_since = stats['time_since_last_tick']
             if time_since < 3:
-                indicator = "\ud83d\udfe2 LIVE"
+                indicator = "🟢 LIVE"
             elif time_since < 10:
-                indicator = "\ud83d\udfe1 STALE"
+                indicator = "🟡 STALE"
             else:
-                indicator = "\ud83d\udd34 NO DATA"
+                indicator = "🔴 NO DATA"
             print(f"\n  Current Price: {price_str}    Status: {indicator}")
             print(f"  Last Tick: {stats['last_tick_time']}    ({time_since:.1f}s ago)")
 
